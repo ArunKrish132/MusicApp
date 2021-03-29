@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VBI Music</title>
+
+    <!-- Bootstrap core CSS -->
+  	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %} "/>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/metro-all.min.css' %}"/>
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/metro.min.js' %}"></script>
+    <script src="{% static 'js/myjs.js' %}"></script>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+    <script type="text/javascript">
+      $( document ).ready(function() {
+          // list_all_songs();
+          $('.default-icon-cross').click(function() {
+            location.reload();
+          })
+          $('.all-songs').click(function() {
+            location.reload();
+          })
+      });
+    </script>
+  </head>
+
+  <!-- <body style="text-align: center;"> -->
+  <body>
+  	<div style="width: 100%">
+  		{% block body_block %}
+  		{% endblock %}
+  	</div>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+{% extends 'VBIMusicApp/base.html' %}
+{% load staticfiles %}
+{% block body_block %}
+
+<style type="text/css">
+	body{
+		display: block !important;
+	}
+</style>
+
+<div class="grid">
+    <div class="row">
+        <div class="cell-1">
+            <div></div>
+        </div>
+        <div class="cell-10">
+
+        	<!-- topbar starts -->
+            <ul class="h-menu">
+                <li><a href="#">VBI - Your music companion!</a></li>
+                {% if user.is_authenticated %}
+                  	<!-- <p style="display: inline-block;color: blue;">Hi {{ user.get_username }},</p> -->
+                    <!-- <a href="{% url 'logout' %}">Logout</a> -->
+                	
+                    <li style="float: right;"><a href="{% url 'logout' %}">Logout</a></li>
+                	<li style="float: right;"><a href="#">Welcome {{ user.get_username }}</a></li>
+                {% endif %}
+            </ul>
+            <!-- topbar ends -->
+
+            <!-- tab section starts -->
+            <ul data-cls-tabs="flex-justify-center mt-2" data-role="tabs" data-expand="true">
+                <li class="all-songs"><a href="#_allsongs">All Songs</a></li>
+                <li onclick='list_all_playlists()'><a href="#_playlists">Playlists</a></li>
+            </ul>
+            <!-- tab section ends -->
+            
+            <!-- tabeselector is id href attr -->
+            <div class="border bd-default no-border-top p-2">
+                <div id="_allsongs">
+                    <!-- search section starts -->
+                    <form action="javascript:" onsubmit="search_song()">
+                        <input id="search_text" type="text" data-role="input" data-search-button-click="custom"
+                            data-on-search-button-click="mySubmitSearch" data-history="true"
+                            data-prepend="Search Songs:">
+                    </form>
+                    <!-- search section ends -->
+                    <!-- list song section starts -->
+                    <div class="items-list" id='items-list'>
+                    	{% for song in all_songs %}
+                    	<div class="item" style="min-height:80px;height: 80px;">
+						    <img class="avatar" src="{% static 'images/1.jpg' %}">
+                            <span class="label">{{song.song_title}}</span>
+                            <span class="second-label">{{song.album}}</span>
+                            <span class="second-label">{{song.singers}}</span>
+                            <span class="second-action" style="right: 96px;font-size: 12pt;cursor:none">{{song.play_time}}</span>
+                            <span class="second-action mif-play fg-red"></span>
+                        </div>
+					    {% endfor %}
+                    </div>
+                    <!-- list song section ends -->
+                </div>
+                <div id="_playlists">
+                	<div class="items-list" id='playlist-items'>
+                    </div>
+                    <div class="col-md-12 text-center">
+						<button class="button info" onclick="Metro.dialog.open('#playlistDialog')">Create Playlist</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cell-1">
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Playlist Modal -->
+<div class="dialog" data-role="dialog" id="playlistDialog">
+    <div class="dialog-title">Create Playlist</div>
+    <div class="dialog-content">
+        <form action="javascript:" method="post">
+        	{% csrf_token %}
+            <div class="form-group">
+		        <div class="row mb-2">
+			        <label class="cell-sm-3">Playlist Name</label>
+			        <div class="cell-sm-9">
+			            <input type="text" id="playlist-name" class="metro-input">
+			        </div>
+			    </div>
+		    </div>
+        </form>
+    </div>
+    <div class="dialog-actions">
+        <button class="button success js-dialog-close" onclick="create_playlist()">Create</button>
+    </div>
+</div>
+
+{% endblock %}
