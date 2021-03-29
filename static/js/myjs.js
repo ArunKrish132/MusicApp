@@ -1,4 +1,10 @@
 var total_song_count = 0;
+
+function openPlaylistDialog(){
+    $("#playlist-name").val('');
+    Metro.dialog.open('#playlistDialog');
+}
+
 function list_all_songs(){
     $.ajax(
     {
@@ -140,9 +146,15 @@ function create_playlist(){
             let playlistItem ='';
             for(i = 0; i < data.length; i++){
                 playlistItem += '<div class="item playlist-item">';
-                playlistItem += '<span class="label" id=playlist' + i + ' style="cursor:pointer;" value="' + data[i].playlist_id + '">' + data[i].playlist_name + '</span>';
+                playlistItem += '<span class="label" id="' + data[i].playlist_id + '" style="cursor:pointer;" value="' + data[i].playlist_name + '">' + data[i].playlist_name + '</span>';
                 playlistItem += '<span class="second-action" style="right: 20px;font-size: 10pt;width:130px;">' + data[i].created_at +'</span></div>';
             } 
+            $( document ).ready(function() {
+                $(".playlist-item > .label").click(function(evt){
+                    $("#playlist-header").html('<h6 class=".h6" id="playlist-header-value" value="' + $(this).attr("id") + '"">' + $(this).attr("value") + '</h6>');
+                    view_playlist($(this).attr("id"));
+                });
+            });
             $("#playlist-items").html(playlistItem);
         }
      })
@@ -272,19 +284,38 @@ function add_song_to_playlist(song_id){
         },
         success: function(data) 
         {
-            let listItemHtml ='';
-            for(i = 0; i < data.length; i++){
-                listItemHtml += '<div class="item"><img class="avatar" src="../../static/images/1.jpg">';
-                listItemHtml += '<span class="label">' + data[i].song_title + '</span>';
-                listItemHtml += '<span class="second-label">' + data[i].album + '</span>';
-                listItemHtml += '<span class="second-label">' + data[i].singers + '</span>';
-                listItemHtml += '<span class="second-action" style="right: 96px;font-size: 12pt;cursor:none">' + data[i].play_time + '</span><span class="second-action mif-play fg-ash"></span></div>';
-            } 
-            $("#playlist-songs").html(listItemHtml);
-            $(".playlist-items").css("display","none");
-            $(".playlist-header").css("display","block");
-            $(".playlist-search").css("display","none");
-            $(".playlist-songs").css("display","block");
+            if (data.length != 0){
+                let listItemHtml ='';
+                for(i = 0; i < data.length; i++){
+                    listItemHtml += '<div class="item"><img class="avatar" src="../../static/images/1.jpg">';
+                    listItemHtml += '<span class="label">' + data[i].song_title + '</span>';
+                    listItemHtml += '<span class="second-label">' + data[i].album + '</span>';
+                    listItemHtml += '<span class="second-label">' + data[i].singers + '</span>';
+                    listItemHtml += '<span class="second-action" style="right: 96px;font-size: 12pt;cursor:none">' + data[i].play_time + '</span><span class="second-action mif-play fg-ash"></span></div>';
+                } 
+                $("#playlist-songs").html(listItemHtml);
+                $(".playlist-items").css("display","none");
+                $(".playlist-header").css("display","block");
+                $(".playlist-search").css("display","none");
+                $(".playlist-songs").css("display","block");
+                $(".shuffle-btn").css("display","initial");
+                $(".no-songs").css("display","none");
+                if (total_song_count == data.length){
+                    $(".add-btn").css("display","none");
+                }
+                else{
+                    $(".add-btn").css("display","initial");
+                }
+            }
+            else{
+                $(".playlist-items").css("display","none");
+                $(".playlist-header").css("display","block");
+                $(".playlist-search").css("display","none");
+                $(".playlist-songs").css("display","none");
+                $(".shuffle-btn").css("display","none");
+                $(".add-btn").css("display","none");
+                $(".no-songs").css("display","block");
+            }
         }
      })
 }

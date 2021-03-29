@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-
+import datetime
 
 class Singer(models.Model):      
 	id = models.AutoField(primary_key=True)

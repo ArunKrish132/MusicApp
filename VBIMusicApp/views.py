@@ -93,7 +93,8 @@ def create_playlist(request):
 	playlist.save()
 	playlist_queryset = Playlist.objects.filter(user_id__exact=user_id)
 	for playlist in playlist_queryset:
-		all_playlists.append({'playlist_name':playlist.playlist_name, 'created_at': playlist.created_at.strftime("%d-%m-%Y %H:%M:%S")})
+		all_playlists.append({'playlist_id':playlist.uuid, 'playlist_name':playlist.playlist_name, 'created_at': playlist.created_at.strftime("%d-%m-%Y %H:%M:%S")})
+	print(all_playlists)
 	return Response(data = all_playlists, status=status.HTTP_200_OK)
 
 @login_required

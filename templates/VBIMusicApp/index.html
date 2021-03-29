@@ -61,7 +61,7 @@
                 	<div class="items-list playlist-items" id='playlist-items'>
                     </div>
                     <div class="col-md-12 text-center playlist-items">
-						<button class="button info" onclick="Metro.dialog.open('#playlistDialog')">Create Playlist</button>
+						<button class="button info" onclick="openPlaylistDialog()">Create Playlist</button>
                     </div>
                     <div class="col-md-12 playlist-header" id="playlist-header">
                     </div>
@@ -92,9 +92,9 @@
         <form action="javascript:" method="post">
         	{% csrf_token %}
             <div class="form-group">
-		        <div class="row mb-2">
-			        <label class="cell-sm-3">Playlist Name</label>
-			        <div class="cell-sm-9">
+		        <div class="row mb-12">
+			        <label class="cell-sm-4">Playlist Name</label>
+			        <div class="cell-sm-8">
 			            <input type="text" id="playlist-name" class="metro-input">
 			        </div>
 			    </div>
@@ -103,6 +103,7 @@
     </div>
     <div class="dialog-actions">
         <button class="button success js-dialog-close" onclick="create_playlist()">Create</button>
+        <button class="button warning js-dialog-close" onclick="">Cancel</button>
     </div>
 </div>
 
