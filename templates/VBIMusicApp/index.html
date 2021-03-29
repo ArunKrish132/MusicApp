@@ -16,7 +16,7 @@
         <div class="cell-10">
 
         	<!-- topbar starts -->
-            <ul class="h-menu">
+            <ul class="h-menu" style="color: white; background-color: #006497;">
                 <li><a href="#">VBI - Your music companion!</a></li>
                 {% if user.is_authenticated %}
                   	<!-- <p style="display: inline-block;color: blue;">Hi {{ user.get_username }},</p> -->
@@ -46,25 +46,35 @@
                     </form>
                     <!-- search section ends -->
                     <!-- list song section starts -->
+                                       
                     <div class="items-list" id='items-list'>
-                    	{% for song in all_songs %}
-                    	<div class="item" style="min-height:80px;height: 80px;">
-						    <img class="avatar" src="{% static 'images/1.jpg' %}">
-                            <span class="label">{{song.song_title}}</span>
-                            <span class="second-label">{{song.album}}</span>
-                            <span class="second-label">{{song.singers}}</span>
-                            <span class="second-action" style="right: 96px;font-size: 12pt;cursor:none">{{song.play_time}}</span>
-                            <span class="second-action mif-play fg-red"></span>
-                        </div>
-					    {% endfor %}
                     </div>
                     <!-- list song section ends -->
                 </div>
                 <div id="_playlists">
-                	<div class="items-list" id='playlist-items'>
+                	<div class="no-playlists">
+                    	<h5><small> No playlist available </small></h5>
+                	</div>
+                	<div class="no-songs">
+                    	<h5><small> No song available </small></h5>
+                	</div>
+                	<div class="items-list playlist-items" id='playlist-items'>
+                    </div>
+                    <div class="col-md-12 text-center playlist-items">
+						<button class="button info" onclick="Metro.dialog.open('#playlistDialog')">Create Playlist</button>
+                    </div>
+                    <div class="col-md-12 playlist-header" id="playlist-header">
                     </div>
                     <div class="col-md-12 text-center">
-						<button class="button info" onclick="Metro.dialog.open('#playlistDialog')">Create Playlist</button>
+						<button class="button info shuffle-btn" onclick="shuffle_songs()">Shuffle Play</button>
+						<button class="button info add-btn" onclick="list_songs_to_add_to_playlist()">Add Song</button>
+                    </div>
+                    <form class="playlist-search" id="playlist-search" action="javascript:" onsubmit="search_in_playlist()">
+                        <input id="search_text" type="text" data-role="input" data-search-button-click="custom"
+                            data-on-search-button-click="mySubmitSearch" data-history="true"
+                            data-prepend="Search Songs:">
+                    </form>
+                    <div class="items-list playlist-songs" id='playlist-songs'>
                     </div>
                 </div>
             </div>

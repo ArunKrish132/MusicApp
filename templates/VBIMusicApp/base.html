@@ -12,18 +12,18 @@
     <link rel="stylesheet" href="{% static 'css/metro-all.min.css' %}"/>
     <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/metro.min.js' %}"></script>
+    <script src="{% static 'js/metro.min.js' %}" defer></script>
     <script src="{% static 'js/myjs.js' %}"></script>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
     <script type="text/javascript">
       $( document ).ready(function() {
-          // list_all_songs();
-          $('.default-icon-cross').click(function() {
-            location.reload();
-          })
+          list_all_songs();
+          $('#_allsongs .default-icon-cross').click(function() {
+            list_all_songs();
+          });
           $('.all-songs').click(function() {
-            location.reload();
-          })
+            list_all_songs();
+          });
       });
     </script>
   </head>

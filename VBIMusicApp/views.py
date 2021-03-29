@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 import json
+import random
 from VBIMusicApp.models import Song, Singer, SongSingerMapping, Playlist, SongPlayListMapping, User
 
 # Create your views here.
@@ -39,21 +40,22 @@ def user_logout(request):
 	logout(request)
 	return render(request, 'VBIMusicApp/login.html')
 
-# def index(request):
-# 	return render(request, 'VBIMusicApp/index.html')
+def index(request):
+	return render(request, 'VBIMusicApp/index.html')
 
 def song_template(queryset):
 	songs = []
 	for song in queryset:
 		singers_str = ','.join(list(song.singers.all().values_list('singer_name', flat=True)))
-		songs.append({'song_title':song.song_title, 'singers': singers_str, 'album' : song.album, 'play_time': song.play_time})
+		songs.append({'song_id':song.id, 'song_title':song.song_title, 'singers': singers_str, 'album' : song.album, 'play_time': song.play_time})
 	return songs
 
 @login_required
+@api_view(['GET'])
 def list_all_songs(request):
 	song_queryset = Song.objects.all().prefetch_related('singers')
 	all_songs = song_template(song_queryset)
-	return render(request, 'VBIMusicApp/index.html', {'all_songs':all_songs})
+	return Response(data = all_songs, status=status.HTTP_200_OK)
 
 @login_required
 @api_view(['GET'])
@@ -70,14 +72,14 @@ def list_all_playlists(request):
 	all_playlists = []
 	playlist_queryset = Playlist.objects.filter(user_id__exact=user_id)
 	for playlist in playlist_queryset:
-		all_playlists.append({'playlist_name':playlist.playlist_name, 'created_at': playlist.created_at.strftime("%d-%m-%Y %H:%M:%S")})
+		all_playlists.append({'playlist_id':playlist.uuid, 'playlist_name':playlist.playlist_name, 'created_at': playlist.created_at.strftime("%d-%m-%Y %H:%M:%S")})
 	return Response(data = all_playlists, status=status.HTTP_200_OK)
 
 @login_required
 @api_view(['GET'])
 def view_playlist(request):
 	playlist_id = request.GET['playlist_id']
-	songs_list = song_template(Playlist.objects.filter(id=playlist_id).prefetch_related('songs')[0].songs.all().order_by('-songplaylistmapping'))
+	songs_list = song_template(Playlist.objects.filter(uuid=playlist_id).prefetch_related('songs')[0].songs.all().order_by('-songplaylistmapping'))
 	return Response(data = songs_list, status=status.HTTP_200_OK)
 
 @login_required
@@ -98,7 +100,7 @@ def create_playlist(request):
 @api_view(['GET'])
 def list_songs_to_add_to_playlist(request):
 	playlist_id = request.GET['playlist_id']
-	song_id_list = list(Playlist.objects.filter(id=playlist_id).prefetch_related('songs')[0].songs.values_list('id', flat=True))
+	song_id_list = list(Playlist.objects.filter(uuid=playlist_id).prefetch_related('songs')[0].songs.values_list('id', flat=True))
 	songs_list = song_template(Song.objects.exclude(pk__in=song_id_list))
 	return Response(data = songs_list, status=status.HTTP_200_OK)
 
@@ -107,11 +109,30 @@ def list_songs_to_add_to_playlist(request):
 def add_song_to_playlist(request):
 	playlist_id = request.POST.get('playlist_id')
 	song_id = request.POST.get('song_id')
-	playlist = Playlist.objects.only('id').get(id=playlist_id)
+	playlist = Playlist.objects.only('id').get(uuid=playlist_id)
 	song = Song.objects.only('id').get(id=song_id)
 	song_mapper = SongPlayListMapping.objects.create(playlist_id=playlist, song_id=song)
 	song_mapper.save()
-	song_id_list = list(Playlist.objects.filter(id=playlist_id).prefetch_related('songs')[0].songs.values_list('id', flat=True))
-	songs_list = song_template(Song.objects.filter(pk__in=song_id_list))
+	songs_list = song_template(Playlist.objects.filter(uuid=playlist_id).prefetch_related('songs')[0].songs.all().order_by('-songplaylistmapping'))
 	return Response(data = songs_list, status=status.HTTP_200_OK)
 
+@login_required
+@api_view(['GET'])
+def search_in_playlist(request):
+	playlist_id = request.GET['playlist_id']
+	search_text = request.GET['search_text']
+	print(playlist_id, search_text);
+	song_id_list = list(Playlist.objects.filter(uuid=playlist_id).prefetch_related('songs')[0].songs.values_list('id', flat=True))
+	songs_list = []
+	if (list(Song.objects.exclude(pk__in=song_id_list).filter(song_title__icontains=search_text))) != 0:
+		songs_list = song_template(Song.objects.exclude(pk__in=song_id_list).filter(song_title__icontains=search_text))
+	return Response(data = songs_list, status=status.HTTP_200_OK)
+
+@login_required
+@api_view(['GET'])
+def shuffle_songs(request):
+	playlist_id = request.GET['playlist_id']
+	song_id_list = list(Playlist.objects.filter(uuid=playlist_id).prefetch_related('songs')[0].songs.values_list('id', flat=True))
+	songs_list = song_template(Song.objects.filter(pk__in=song_id_list).order_by('?'))
+	print(songs_list)
+	return Response(data = songs_list, status=status.HTTP_200_OK)

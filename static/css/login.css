@@ -107,3 +107,15 @@ body {
 .custom-control-label{
   font-size: 0.85rem;
 }
+
+.no-songs .no-playlists .playlist-header .playlist-search .playlist-songs{
+  display: none;
+}
+
+.shuffle-btn .add-btn{
+  display: initial;
+}
+
+.playlist-items{
+  display: block;
+}
